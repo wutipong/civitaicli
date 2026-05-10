@@ -26,6 +26,6 @@ func main() {
 
 	err := command.Run(ctx, os.Args)
 	if err != nil {
-		fmt.Printf("command fails: %s", err.Error())
+		fmt.Printf("command fails: %s\n", err.Error())
 	}
 }
