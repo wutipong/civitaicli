@@ -30,6 +30,20 @@ func Command() *cli.Command {
 					return nil
 				},
 			},
+			{
+				Name:  "location",
+				Usage: "return cache location",
+				Action: func(ctx context.Context, c *cli.Command) error {
+					path, err := CacheLocation()
+					if err != nil {
+						return fmt.Errorf("unable to get cache location: %w", err)
+					}
+
+					fmt.Println(path)
+
+					return nil
+				},
+			},
 		},
 	}
 }

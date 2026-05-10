@@ -8,6 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v3"
+	"github.com/wutipong/civitaicli/cache"
 	"github.com/wutipong/civitaicli/download"
 )
 
@@ -18,6 +19,7 @@ func main() {
 		Name: "Civitai CLI",
 		Commands: []*cli.Command{
 			download.Command(),
+			cache.Command(),
 		},
 	}
 
