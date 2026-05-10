@@ -183,13 +183,21 @@ func CopyFile(dstPath, srcPath string) error {
 
 	defer dst.Close()
 
-	stat, err := os.Stat(srcPath)
+	statSrc, err := os.Stat(srcPath)
 	if err != nil {
 		return fmt.Errorf("unable to get source file stat: %w", err)
 	}
 
+	statDst, err := os.Stat(dstPath)
+	if err == nil {
+		if statSrc.Size() == statDst.Size() {
+			fmt.Println("destination file exists. skipped.")
+			return nil
+		}
+	}
+
 	bar := progressbar.DefaultBytes(
-		stat.Size(),
+		statSrc.Size(),
 		"copying",
 	)
 
