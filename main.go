@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 
@@ -23,5 +24,8 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	command.Run(ctx, os.Args)
+	err := command.Run(ctx, os.Args)
+	if err != nil {
+		fmt.Printf("command fails: %s", err.Error())
+	}
 }
