@@ -151,7 +151,11 @@ func doDownload(ctx context.Context, u *url.URL, apiKey string) (filePath string
 		resp.ContentLength,
 		"downloading",
 	)
-	io.Copy(io.MultiWriter(f, bar), resp.Body)
+	_, err = io.Copy(io.MultiWriter(f, bar), resp.Body)
+	if err != nil {
+		err = fmt.Errorf("failed to download: %w", err)
+		return
+	}
 
 	err = os.MkdirAll(filepath.Dir(filePath), 0750)
 	if err != nil {
