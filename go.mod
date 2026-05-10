@@ -1,4 +1,4 @@
-module github.com/wutipong/civitcli
+module github.com/wutipong/civitaicli
 
 go 1.26.1
 

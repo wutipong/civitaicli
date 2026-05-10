@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v3"
-	"github.com/wutipong/civitcli/download"
+	"github.com/wutipong/civitaicli/download"
 )
 
 func main() {
