@@ -5,14 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/schollz/progressbar/v3"
 	"github.com/urfave/cli/v3"
+	"github.com/wutipong/civitaicli/api"
 	"github.com/wutipong/civitaicli/cache"
 )
 
@@ -54,11 +57,42 @@ func Command() *cli.Command {
 			if err != nil {
 				return fmt.Errorf("url parse failed: %w", err)
 			}
+
+			parts := strings.Split(strings.Trim(u.Path, "/"), "/")
+			fmt.Println(parts)
+			if len(parts) != 4 {
+				return fmt.Errorf("invalid download url: %s", urlStr)
+			}
+
+			version, err := api.GetModelVersionInfo(ctx, parts[3], apiKey)
+			if err != nil {
+				return fmt.Errorf("unable to read model version info: %w", err)
+			}
+
 			fmt.Printf("Downloading from URL: %s\n", u.String())
 
 			cacheFilePath, err := doDownload(ctx, u, apiKey)
 			if err != nil {
-				return fmt.Errorf("failed to download: %w", err)
+				slog.Warn("download fails, try using link from model info", slog.String("error", err.Error()))
+
+				for _, file := range version.Files {
+					u, err = url.Parse(file.DownloadURL)
+					if err != nil {
+						slog.Warn("failed to parse download url. skip to the next", "error", err.Error())
+					}
+					slog.Info("downloading using url.", "url", file.DownloadURL)
+					cacheFilePath, err = doDownload(ctx, u, apiKey)
+					if err != nil {
+						slog.Warn("failed to download. skip to next file.", "error", err.Error())
+					} else {
+						break
+					}
+				}
+
+				if err != nil {
+					return fmt.Errorf("unable to download from model's download url.")
+				}
+
 			}
 
 			fmt.Printf("cached file location: %s\n", cacheFilePath)
